@@ -53,11 +53,11 @@ st.markdown(custom_css, unsafe_allow_html=True)
 st.markdown('<div class="main-title">🎓 UniGuide AI Assistant</div>', unsafe_allow_html=True)
 st.markdown('<div class="sub-title">Instant, accurate details on fees, admissions, courses & campus life</div>', unsafe_allow_html=True)
 
-# 4. API Key Verification
+# 4. API Key Verification (Groq key starts with "gsk_")
 grok_api_key = st.secrets.get("GROK_API_KEY") or os.getenv("GROK_API_KEY")
 
 if not grok_api_key:
-    st.error("🔑 Grok API key is missing! Please configure GROK_API_KEY in Streamlit Secrets.")
+    st.error("🔑 Groq API key is missing! Please configure GROK_API_KEY in Streamlit Secrets.")
     st.stop()
 
 # 5. Document Ingestion & Index Sync
@@ -76,11 +76,11 @@ def load_vector_db():
 vector_db = load_vector_db()
 retriever = vector_db.as_retriever(search_kwargs={"k": 3})
 
-# 7. Initialize Grok LLM (Using xAI's official supported model)
+# 7. Initialize Groq LLM (OpenAI-compatible endpoint)
 llm = ChatOpenAI(
-    model="grok-2-latest",
-    openai_api_key=grok_api_key,
-    openai_api_base="https://api.x.ai/v1",
+    model="llama-3.3-70b-versatile",          # Groq-supported model
+    openai_api_key=grok_api_key,              # Your "gsk_..." key
+    openai_api_base="https://api.groq.com/openai/v1",  # Groq endpoint
     temperature=0.2
 )
 

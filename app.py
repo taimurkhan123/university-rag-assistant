@@ -3,8 +3,8 @@ import streamlit as st
 from langchain_community.vectorstores import FAISS
 from langchain_community.embeddings import HuggingFaceEmbeddings
 from langchain_openai import ChatOpenAI
-from langchain.chains import create_retrieval_chain
-from langchain.chains.combine_documents import create_stuff_documents_chain
+from langchain_classic.chains import create_retrieval_chain
+from langchain_classic.chains.combine_documents import create_stuff_documents_chain
 from langchain_core.prompts import ChatPromptTemplate
 from ingest import download_drive_folder, build_faiss_index, GDRIVE_FOLDER_ID, LOCAL_DATA_DIR, FAISS_DB_PATH
 
@@ -15,16 +15,13 @@ st.set_page_config(
     layout="centered"
 )
 
-# 2. Modern Glassmorphic CSS Styling
+# 2. Modern UI CSS Styling
 custom_css = """
 <style>
-    /* Global background and font setup */
     .stApp {
         background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
         font-family: 'Inter', sans-serif;
     }
-    
-    /* Header styling */
     .main-title {
         font-size: 2.2rem;
         font-weight: 700;
@@ -40,8 +37,6 @@ custom_css = """
         font-size: 0.95rem;
         margin-bottom: 2rem;
     }
-
-    /* Style Chat Message Containers */
     [data-testid="stChatMessage"] {
         background-color: rgba(30, 41, 59, 0.7);
         border: 1px solid rgba(255, 255, 255, 0.08);
@@ -49,27 +44,6 @@ custom_css = """
         border-radius: 16px;
         padding: 1rem;
         margin-bottom: 1rem;
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2);
-    }
-    
-    /* User chat bubble customization */
-    [data-testid="stChatMessage"]:nth-child(even) {
-        background: linear-gradient(135deg, rgba(99, 102, 241, 0.15), rgba(168, 85, 247, 0.15));
-        border: 1px solid rgba(129, 140, 248, 0.3);
-    }
-
-    /* Style Expander Accordion */
-    .streamlit-expanderHeader {
-        background-color: #1e293b !important;
-        border-radius: 10px !important;
-        color: #c084fc !important;
-    }
-
-    /* Input box polish */
-    div[data-baseweb="input"] {
-        border-radius: 24px !important;
-        background-color: #1e293b !important;
-        border: 1px solid rgba(255, 255, 255, 0.1) !important;
     }
 </style>
 """
@@ -102,7 +76,7 @@ def load_rag_pipeline():
 vector_db = load_rag_pipeline()
 retriever = vector_db.as_retriever(search_kwargs={"k": 3})
 
-# 6. Initialize Grok via xAI OpenAI Compatibility
+# 6. Initialize Grok LLM via xAI OpenAI Compatibility
 llm = ChatOpenAI(
     model="grok-beta",
     openai_api_key=grok_api_key,

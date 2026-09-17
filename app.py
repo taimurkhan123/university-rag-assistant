@@ -78,7 +78,7 @@ retriever = vector_db.as_retriever(search_kwargs={"k": 3})
 
 # 7. Initialize Groq LLM (OpenAI-compatible endpoint)
 llm = ChatOpenAI(
-    model="llama-3.3-70b-versatile",          # Groq-supported model
+    model="openai/gpt-oss-120b",              # Current, supported Groq model
     openai_api_key=grok_api_key,              # Your "gsk_..." key
     openai_api_base="https://api.groq.com/openai/v1",  # Groq endpoint
     temperature=0.2

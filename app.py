@@ -53,6 +53,13 @@ st.markdown(custom_css, unsafe_allow_html=True)
 st.markdown('<div class="main-title">🎓 UniGuide AI Assistant</div>', unsafe_allow_html=True)
 st.markdown('<div class="sub-title">Instant, accurate details on fees, admissions, courses & campus life</div>', unsafe_allow_html=True)
 
+# 3.5 Sidebar with Clear Chat Button
+with st.sidebar:
+    st.markdown("### ⚙️ Controls")
+    if st.button("🗑️ Clear Chat History", use_container_width=True):
+        st.session_state.messages = []
+        st.rerun()
+
 # 4. API Key Verification (Groq key starts with "gsk_")
 grok_api_key = st.secrets.get("GROK_API_KEY") or os.getenv("GROK_API_KEY")
 
@@ -78,9 +85,9 @@ retriever = vector_db.as_retriever(search_kwargs={"k": 3})
 
 # 7. Initialize Groq LLM (OpenAI-compatible endpoint)
 llm = ChatOpenAI(
-    model="openai/gpt-oss-120b",              # Current, supported Groq model
-    openai_api_key=grok_api_key,              # Your "gsk_..." key
-    openai_api_base="https://api.groq.com/openai/v1",  # Groq endpoint
+    model="openai/gpt-oss-120b",
+    openai_api_key=grok_api_key,
+    openai_api_base="https://api.groq.com/openai/v1",
     temperature=0.2
 )
 

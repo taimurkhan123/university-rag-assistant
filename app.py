@@ -76,9 +76,9 @@ def load_rag_pipeline():
 vector_db = load_rag_pipeline()
 retriever = vector_db.as_retriever(search_kwargs={"k": 3})
 
-# 6. Initialize Grok LLM via xAI OpenAI Compatibility
+# 6. Initialize Grok LLM via xAI OpenAI Compatibility (Updated model name)
 llm = ChatOpenAI(
-    model="grok-beta",
+    model="grok-3",
     openai_api_key=grok_api_key,
     openai_api_base="https://api.x.ai/v1",
     temperature=0.2

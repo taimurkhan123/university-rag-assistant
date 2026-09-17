@@ -60,25 +60,25 @@ if not grok_api_key:
     st.error("🔑 Grok API key is missing! Please configure GROK_API_KEY in Streamlit Secrets.")
     st.stop()
 
-# 5. Load RAG Pipeline
-@st.cache_resource
-def load_rag_pipeline():
-    if not os.path.exists(FAISS_DB_PATH):
-        with st.status("🚀 Syncing Google Drive documents & building vector index...", expanded=True) as status:
-            download_drive_folder(GDRIVE_FOLDER_ID, LOCAL_DATA_DIR)
-            build_faiss_index()
-            status.update(label="Sync Complete!", state="complete", expanded=False)
-            
-    embeddings = HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
-    db = FAISS.load_local(FAISS_DB_PATH, embeddings, allow_dangerous_deserialization=True)
-    return db
+# 5. Document Ingestion & Index Sync
+if not os.path.exists(FAISS_DB_PATH):
+    with st.status("🚀 Syncing Google Drive documents & building vector index...", expanded=True) as status:
+        download_drive_folder(GDRIVE_FOLDER_ID, LOCAL_DATA_DIR)
+        build_faiss_index()
+        status.update(label="✅ Index built successfully!", state="complete", expanded=False)
 
-vector_db = load_rag_pipeline()
+# 6. Load FAISS Vector Store (Cached)
+@st.cache_resource
+def load_vector_db():
+    embeddings = HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
+    return FAISS.load_local(FAISS_DB_PATH, embeddings, allow_dangerous_deserialization=True)
+
+vector_db = load_vector_db()
 retriever = vector_db.as_retriever(search_kwargs={"k": 3})
 
-# 6. Initialize Grok LLM using GPT OSS 120B model
+# 7. Initialize Grok LLM (Using xAI's official supported model)
 llm = ChatOpenAI(
-    model="gpt-oss-120b",
+    model="grok-2-latest",
     openai_api_key=grok_api_key,
     openai_api_base="https://api.x.ai/v1",
     temperature=0.2
@@ -99,7 +99,7 @@ prompt = ChatPromptTemplate.from_messages([
 question_answer_chain = create_stuff_documents_chain(llm, prompt)
 rag_chain = create_retrieval_chain(retriever, question_answer_chain)
 
-# 7. Chat History Render
+# 8. Chat History Render
 if "messages" not in st.session_state:
     st.session_state.messages = []
 
@@ -107,7 +107,7 @@ for msg in st.session_state.messages:
     with st.chat_message(msg["role"]):
         st.markdown(msg["content"])
 
-# 8. User Input Processing
+# 9. User Input Processing
 if user_query := st.chat_input("Ask about tuition, admissions, hostels..."):
     st.session_state.messages.append({"role": "user", "content": user_query})
     with st.chat_message("user"):
